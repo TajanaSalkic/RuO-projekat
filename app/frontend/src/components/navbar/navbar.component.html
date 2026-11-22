@@ -1,0 +1,16 @@
+<header class="top-header">
+  <div class="user-info" (click)="toggleDropdown()">
+    <div class="user-avatar">
+      <i class="fa fa-user"></i>
+    </div>
+    <span class="user-name">{{ userName }}</span>
+  </div>
+
+  <div class="dropdown-menu" *ngIf="dropdownVisible">
+    <ul>
+      <li (click)="goToUsers()" *ngIf="userRole==='Admin'">Users</li>
+      <li (click)="goToProjects()">Projects</li>
+      <li (click)="logout()">Log out</li>
+    </ul>
+  </div>
+</header>

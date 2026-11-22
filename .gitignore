@@ -1,0 +1,57 @@
+# Tajna koja jednom uđe u historiju smatra se otkrivenom, čak i ako se kasnije obriše.
+*.env
+.env
+.env.*
+!*.env.example
+.vault_pass
+vault_pass*
+# stvarni vault ide šifrovan; u Git ide samo primjer
+ansible/group_vars/all/vault.yml
+secrets/
+# privatni ključevi (SSH, TLS, TSIG)
+*.key
+*.pem
+*.p12
+id_rsa
+id_ed25519
+*tsig*.key
+tsig.*
+
+# === Terraform ===
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+# lock fajl SE commita (reproducibilnost provajdera):
+!**/.terraform.lock.hcl
+
+# === Ansible ===
+*.retry
+# inventory generiše Terraform - nije u Gitu
+ansible/inventory.ini
+
+# === .NET backend ===
+[Bb]in/
+[Oo]bj/
+*.user
+.vs/
+
+# === Angular / Node frontend ===
+node_modules/
+dist/
+.angular/
+npm-debug.log*
+
+# === OS / IDE ===
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
