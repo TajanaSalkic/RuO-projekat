@@ -1,0 +1,18 @@
+#cloud-config
+hostname: ${hostname}
+fqdn: ${hostname}.${domain}
+preserve_hostname: false
+manage_etc_hosts: true
+
+users:
+  - name: student
+    groups: [sudo]
+    shell: /bin/bash
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ${ssh_key}
+
+# prijava lozinkom onemogućena
+ssh_pwauth: false
+disable_root: true
