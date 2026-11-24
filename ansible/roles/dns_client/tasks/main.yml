@@ -1,0 +1,31 @@
+---
+# Rola dns_client — svi VM-ovi razrješavaju ruo.lab preko projektnog BIND-a.
+# ~{{ dns_zone }} je "routing" domena: samo ruo.lab upiti idu na BIND; ostalo preko FallbackDNS.
+
+- name: Direktorij za resolved drop-in
+  ansible.builtin.file:
+    path: /etc/systemd/resolved.conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Usmjeri ruo.lab na projektni DNS (systemd-resolved)
+  ansible.builtin.copy:
+    dest: /etc/systemd/resolved.conf.d/ruo.conf
+    content: |
+      # Upravljano Ansible rolom dns_client (RuO projekat)
+      [Resolve]
+      DNS={{ ruo_dns_ip }}
+      Domains=~{{ dns_zone }}
+      FallbackDNS=1.1.1.1 8.8.8.8
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart systemd-resolved
+
+- name: systemd-resolved uključen i pokrenut
+  ansible.builtin.service:
+    name: systemd-resolved
+    enabled: true
+    state: started

@@ -1,0 +1,11 @@
+$ORIGIN {{ dns_zone }}.
+$TTL 300
+@       IN  SOA ns.{{ dns_zone }}. admin.{{ dns_zone }}. (
+            {{ ansible_date_time.date | regex_replace('-', '') }}01 ; serial (dinamički updejti ga bumpaju)
+            3600       ; refresh
+            600        ; retry
+            1209600    ; expire
+            300 )      ; minimum
+@       IN  NS  ns.{{ dns_zone }}.
+ns      IN  A   {{ ruo_dns_ip }}
+; Servisne zapise (web/app/db/www) dodaje Terraform (terraform/dns) preko TSIG-a.

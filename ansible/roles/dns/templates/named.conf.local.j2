@@ -1,0 +1,17 @@
+// TSIG ključ kojim Terraform (hashicorp/dns, RFC 2136) mijenja zonu projekta.
+// Tajna dolazi iz ansible-vault-a (vault_tsig_secret).
+key "ruo-tf." {
+    algorithm hmac-sha256;
+    secret "{{ vault_tsig_secret }}";
+};
+
+// Autoritativna zona projekta. Dinamička — zapise dodaje Terraform preko TSIG ključa,
+// koji smije mijenjati SAMO ovu zonu (update-policy ... zonesub).
+zone "{{ dns_zone }}" {
+    type primary;
+    file "/var/lib/bind/db.{{ dns_zone }}";
+    allow-transfer { none; };
+    update-policy {
+        grant ruo-tf. zonesub ANY;
+    };
+};

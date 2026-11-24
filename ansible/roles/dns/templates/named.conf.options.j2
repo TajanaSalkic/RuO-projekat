@@ -1,0 +1,18 @@
+options {
+    directory "/var/cache/bind";
+
+    // Autoritativni za ruo.lab + rekurzivni resolver.
+    recursion yes;
+    allow-recursion { 10.40.0.0/16; localhost; };
+    allow-query     { 10.40.0.0/16; localhost; };
+    forwarders {
+{% for f in dns_forwarders %}
+        {{ f }};
+{% endfor %}
+    };
+
+    dnssec-validation no;
+
+    listen-on { any; };
+    listen-on-v6 { none; };
+};
