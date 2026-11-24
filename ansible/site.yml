@@ -1,0 +1,77 @@
+---
+
+- name: "Host/ruter — NAT i mrežna izolacija segmenata"
+  hosts: localhost
+  connection: local
+  become: true
+  gather_facts: true
+  tags: [firewall]
+  roles:
+    - firewall
+
+- name: "Sačekaj da VM-ovi podignu mrežu i SSH (cloud-init nakon make infra)"
+  hosts: dns:web:app:db
+  gather_facts: false
+  become: false
+  tags: [always]
+  tasks:
+    - name: Čekaj na SSH konekciju
+      ansible.builtin.wait_for_connection:
+        delay: 5
+        timeout: 300
+
+- name: "Osnovna konfiguracija svih VM-ova"
+  hosts: dns:web:app:db
+  become: true
+  tags: [base, common]
+  roles:
+    - common
+
+- name: "Docker na slojevima aplikacije (web, app, db)"
+  hosts: web:app:db
+  become: true
+  tags: [docker]
+  roles:
+    - docker
+
+- name: "DNS server (BIND9) na ruo-dns"
+  hosts: dns
+  become: true
+  tags: [dns]
+  roles:
+    - dns
+
+- name: "DNS klijent — svi VM-ovi razrješavaju ruo.lab preko BIND-a"
+  hosts: dns:web:app:db
+  become: true
+  tags: [dns]
+  roles:
+    - dns_client
+
+- name: "Baza (PostgreSQL) na ruo-db"
+  hosts: db
+  become: true
+  tags: [app, deploy]
+  roles:
+    - app_db
+
+- name: "Backend na ruo-app"
+  hosts: app
+  become: true
+  tags: [app, deploy]
+  roles:
+    - app_backend
+
+- name: "Seed baze — demo podaci"
+  hosts: db
+  become: true
+  tags: [app, deploy]
+  roles:
+    - app_seed
+
+- name: "Frontend (Angular + Nginx) na ruo-web"
+  hosts: web
+  become: true
+  tags: [app, deploy]
+  roles:
+    - app_web

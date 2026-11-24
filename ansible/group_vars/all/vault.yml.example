@@ -1,0 +1,9 @@
+---
+# PRIMJER tajni. Stvarni ansible/group_vars/all/vault.yml je ŠIFROVAN.
+# Napravi stvarni (nasumične vrijednosti, generisane pri pokretanju):
+#     ./scripts/gen-secrets.sh
+# ili ručno:
+#     ansible-vault create ansible/group_vars/all/vault.yml
+vault_db_password: "primjer-db-lozinka-promijeni-me"
+vault_jwt_secret: "primjer-jwt-tajna-najmanje-32-znaka-xxxxxxxxxxxx"
+vault_tsig_secret: "primjerBazno64TsigTajna0000000000000000000=="

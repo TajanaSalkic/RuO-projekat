@@ -1,0 +1,35 @@
+---
+# Globalne varijable.
+
+# Domena i DNS
+ruo_domain: ruo.lab
+dns_zone: ruo.lab
+ruo_dns_ip: "10.40.0.53"
+dns_forwarders:
+  - 1.1.1.1
+  - 8.8.8.8
+
+# Segmenti (podmreže) i adrese servisa
+seg_mgmt: "10.40.0.0/24"
+seg_web: "10.40.1.0/24"
+seg_app: "10.40.2.0/24"
+seg_db: "10.40.3.0/24"
+web_ip: "10.40.1.10"
+app_ip: "10.40.2.10"
+db_ip: "10.40.3.10"
+
+# Portovi aplikacije
+app_port: 5000
+db_port: 5432
+
+# Aplikacija / baza 
+db_name: mentorhub
+db_user: mentorhub
+
+# Firewall: koji segmenti smiju izaći na internet.
+# db je uključen zbog povlačenja postgres image-a.
+fw_egress_segments:
+  - "{{ seg_mgmt }}"
+  - "{{ seg_web }}"
+  - "{{ seg_app }}"
+  - "{{ seg_db }}"

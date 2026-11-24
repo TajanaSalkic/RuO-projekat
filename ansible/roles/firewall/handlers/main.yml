@@ -1,0 +1,11 @@
+---
+- name: apply sysctl
+  ansible.builtin.command: sysctl --system
+  changed_when: false
+
+- name: reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: reload nftables ruo
+  ansible.builtin.command: nft -f /etc/nftables-ruo.nft

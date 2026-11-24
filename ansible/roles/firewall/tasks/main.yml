@@ -1,0 +1,84 @@
+---
+# Rola firewall — nftables izolacija segmenata + NAT na hostu/ruteru.
+
+- name: Otkrij uplink interfejs (interfejs default rute)
+  ansible.builtin.shell: >
+    set -o pipefail;
+    ip route get 1.1.1.1 | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1); exit}}'
+  args:
+    executable: /bin/bash
+  register: uplink_cmd
+  changed_when: false
+
+- name: Postavi fact ruo_uplink
+  ansible.builtin.set_fact:
+    ruo_uplink: "{{ uplink_cmd.stdout | trim }}"
+
+- name: Provjeri da je uplink pronađen
+  ansible.builtin.assert:
+    that: ruo_uplink | length > 0
+    fail_msg: "Nije pronađen uplink interfejs (ip route get 1.1.1.1)."
+
+- name: Instaliraj nftables na hostu
+  ansible.builtin.apt:
+    name: nftables
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Omogući IP forwarding
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/99-ruo-forward.conf
+    content: "net.ipv4.ip_forward = 1\n"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: apply sysctl
+
+- name: Render nftables pravila (sa validacijom)
+  ansible.builtin.template:
+    src: ruo.nft.j2
+    dest: /etc/nftables-ruo.nft
+    owner: root
+    group: root
+    mode: "0644"
+    validate: "nft -c -f %s"
+  notify: reload nftables ruo
+
+- name: systemd unit (pravila prežive reboot hosta)
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/ruo-nft.service
+    content: |
+      [Unit]
+      Description=RuO nftables izolacija segmenata i NAT
+      After=network-pre.target libvirtd.service
+      Wants=network-pre.target
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/sbin/nft -f /etc/nftables-ruo.nft
+      RemainAfterExit=yes
+      [Install]
+      WantedBy=multi-user.target
+    owner: root
+    group: root
+    mode: "0644"
+  notify: reload systemd
+
+- name: Primijeni handlere sada
+  ansible.builtin.meta: flush_handlers
+
+- name: Uključi ruo-nft servis
+  ansible.builtin.systemd:
+    name: ruo-nft
+    enabled: true
+
+# Pri prvom izvršavanju handleri se okidaju tek na kraju; osiguraj da su pravila primijenjena odmah.
+- name: Osiguraj da su pravila učitana sada
+  ansible.builtin.command: nft list table inet ruo
+  register: nft_check
+  changed_when: false
+  failed_when: false
+
+- name: Učitaj pravila ako tabela ne postoji
+  ansible.builtin.command: nft -f /etc/nftables-ruo.nft
+  when: nft_check.rc != 0

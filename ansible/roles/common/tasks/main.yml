@@ -1,0 +1,38 @@
+---
+# Rola common — osnovna konfiguracija svih VM-ova
+
+- name: Sačekaj da cloud-init završi
+  ansible.builtin.command: cloud-init status --wait
+  changed_when: false
+  failed_when: false
+
+- name: Osnovni paketi
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+      - python3
+      - chrony
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Vremenska sinhronizacija (chrony) uključena
+  ansible.builtin.service:
+    name: chrony
+    enabled: true
+    state: started
+
+- name: SSH hardening — bez lozinke, bez root prijave
+  ansible.builtin.copy:
+    dest: /etc/ssh/sshd_config.d/10-ruo.conf
+    content: |
+      # Upravljano Ansible rolom common (RuO projekat)
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      PermitRootLogin no
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart ssh

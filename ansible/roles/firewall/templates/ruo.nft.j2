@@ -1,0 +1,42 @@
+#!/usr/sbin/nft -f
+# mrežna izolacija segmenata + NAT na hostu/ruteru. Generiše Ansible rola firewall.
+# Učitava se ATOMSKI; idiom "table; delete table; table {}" čini reload idempotentnim.
+# Promet KROZ host (forward): zadano DROP; dozvoljava se samo nabrojano. web -> db NEMA puta.
+
+table inet ruo
+delete table inet ruo
+
+table inet ruo {
+  chain forward {
+    type filter hook forward priority -5; policy drop;
+
+    ct state established,related accept
+    ct state invalid drop
+
+    # Promet koji nije vezan za naše segmente (npr. libvirt 'default' mreža) ne diramo
+    ip saddr != 10.40.0.0/16 ip daddr != 10.40.0.0/16 accept
+
+    # Razrješavanje imena: svi segmenti -> projektni DNS ({{ ruo_dns_ip }}:53)
+    ip daddr {{ ruo_dns_ip }} udp dport 53 accept
+    ip daddr {{ ruo_dns_ip }} tcp dport 53 accept
+
+    # Izvana (uplink) dostupan je SAMO web i to samo 80/443
+    iifname "{{ ruo_uplink }}" ip daddr {{ web_ip }} tcp dport { 80, 443 } accept
+
+    # Aplikacijski tok: web -> app:{{ app_port }}, app -> db:{{ db_port }}
+    ip saddr {{ seg_web }} ip daddr {{ app_ip }} tcp dport {{ app_port }} accept
+    ip saddr {{ seg_app }} ip daddr {{ db_ip }}  tcp dport {{ db_port }} accept
+
+    # Izlaz na internet (preko uplinka) za dozvoljene segmente
+    oifname "{{ ruo_uplink }}" ip saddr { {{ fw_egress_segments | join(', ') }} } accept
+
+    # Sve ostalo pada (policy drop). Ključno: web ({{ seg_web }}) -> db ({{ db_ip }}) NIJE dozvoljen.
+    limit rate 5/minute log prefix "ruo-drop: " counter
+  }
+
+  # NAT: segmenti izlaze na internet s adresom hosta (route mode ne radi NAT sam)
+  chain postrouting {
+    type nat hook postrouting priority srcnat;
+    oifname "{{ ruo_uplink }}" ip saddr 10.40.0.0/16 masquerade
+  }
+}
