@@ -161,12 +161,27 @@ Demo nalozi: `admin@ruo.lab` / `Admin123!`, `mentor1@ruo.lab` / `Mentor123!`, `s
 > Ispisi su dobijeni tokom inicijalnog deploymentu. Pokretanjem `make all && make test` dobijate identičan izlaz na svježe podignutom okruženju.
 
 ### Terraform idempotentan (`terraform plan` nakon `apply`)
+
 ```
-No changes. Your infrastructure matches the configuration.
+Apply complete! Resources: 18 added, 0 changed, 0 destroyed.
+
+PLAY RECAP *******************************************************************************************
+localhost                  : ok=10   changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+ruo-app                    : ok=16   changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+ruo-db                     : ok=16   changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+ruo-dns                    : ok=21   changed=11   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+ruo-web                    : ok=16   changed=8    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
 ### Idempotentnost — drugo izvršavanje `make all`
 ```
+No changes. Your infrastructure matches the configuration.
+
+Terraform has compared your real infrastructure against your configuration and found no differences,
+so no changes are needed.
+
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+
 PLAY RECAP
 localhost : ok=10  changed=0   unreachable=0  failed=0
 ruo-app   : ok=13  changed=0   unreachable=0  failed=0
