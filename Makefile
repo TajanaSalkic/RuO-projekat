@@ -26,7 +26,7 @@ todo   = { printf '\n$(c_step)== %s$(c_off)\n' '$(1)'; echo "   [još nije imple
 ##@ Pomoć
 help: ## ovaj popis ciljeva
 > @awk 'BEGIN{FS=":.*## "} /^##@/{printf "\n\033[1m%s\033[0m\n", substr($$0,5)} /^[a-zA-Z0-9_-]+:.*## /{printf "  \033[36m%-10s\033[0m %s\n",$$1,$$2}' $(MAKEFILE_LIST)
-> @printf '\nTok odbrane:  make destroy  →  make all  →  make test  →  make all\n'
+> @printf '\nTok odbrane:  make destroy  ->  make all  ->  make test  ->  make all\n'
 
 ##@ Pojedinačni koraci
 check: ## provjera okruženja (alati, KVM, systemd)
@@ -68,7 +68,7 @@ test: ## testovi: izolacija (web↛db), dig upiti, app, perzistencija
 >   if [ $$rc -eq 0 ]; then echo; echo "SVI TESTOVI PROŠLI"; else echo; echo "NEKI TEST PAO"; fi; exit $$rc
 
 ##@ Sve / uklanjanje
-all: infra config dns deploy ## svi koraci redom (od praznog sistema do aplikacije)
+all: vault infra config dns deploy ## svi koraci redom (od praznog sistema do aplikacije)
 > @$(call banner,all: gotovo (koliko je faza implementirano))
 
 destroy: ## uklanja sve što je projekat kreirao (DNS zapisi, pa VM-ovi)

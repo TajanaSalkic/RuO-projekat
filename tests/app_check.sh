@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# AO-1 provjera aplikacije: web vraća frontend, a login prolazi tok web -> app -> db.
+# Provjera aplikacije: web vraća frontend, a login prolazi tok web -> app -> db.
 set -uo pipefail
 WEB="${WEB_URL:-http://10.40.1.10}"
 
