@@ -10,12 +10,12 @@
     mode: "0755"
 
 - name: Kopiraj frontend build kontekst
-  ansible.builtin.copy:
+  ansible.posix.synchronize:
     src: "{{ playbook_dir }}/../app/frontend/"
     dest: /opt/ruo/frontend/
-    owner: student
-    group: student
-    mode: preserve
+    archive: true
+    delete: true
+  become: false
 
 - name: compose.yaml za web
   ansible.builtin.template:

@@ -56,7 +56,7 @@ sudo apt-get update -y
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
   git make curl wget gnupg lsb-release ca-certificates software-properties-common \
   python3 python3-yaml python3-pip openssh-client ansible \
-  iproute2 iputils-ping nftables bind9-dnsutils jq
+  iproute2 iputils-ping nftables bind9-dnsutils jq rsync
 ok "git, make, curl, ansible, iproute2, nftables, dig (bind9-dnsutils), jq"
 
 step "3/7 HashiCorp repozitorij: Terraform"
