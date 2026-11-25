@@ -90,6 +90,19 @@ wsl -l -v
 
 ## 3. Omogućiti nested virtualizaciju (`.wslconfig`)
 
+Provjeri je li nested virtualizacija već aktivna — ako jeste, preskoči ovaj korak:
+
+```bash
+# u WSL2 Ubuntu terminalu
+grep -c vmx /proc/cpuinfo    # Intel: mora biti > 0
+# ili
+grep -c svm /proc/cpuinfo    # AMD: mora biti > 0
+ls /dev/kvm && echo "KVM dostupan" || echo "KVM NIJE dostupan"
+```
+
+Ako `/dev/kvm` postoji i grep vraća broj > 0 — **preskoči na korak 4**, sve radi.
+Ako ne postoji, nastavi ispod.
+
 Na Windowsu kreirajte/uredite `%USERPROFILE%\.wslconfig` (tj. `C:\Users\<vi>\.wslconfig`) — primjer je u [`wslconfig.primjer`](wslconfig.primjer):
 ```ini
 [wsl2]

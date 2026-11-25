@@ -69,7 +69,7 @@ test: ## testovi: izolacija (web↛db), dig upiti, app, perzistencija
 
 ##@ Sve / uklanjanje
 all: vault infra config dns deploy ## svi koraci redom (od praznog sistema do aplikacije)
-> @$(call banner,all: gotovo (koliko je faza implementirano))
+> @$(call banner,all: gotovo)
 
 destroy: ## uklanja sve što je projekat kreirao (DNS zapisi, pa VM-ovi)
 > @$(call banner,destroy: uklanjanje infrastrukture)
