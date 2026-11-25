@@ -49,6 +49,15 @@ Makefile        check / infra / config / dns / deploy / test / all / destroy
 
 ## Pokretanje od praznog računara
 
+### Šta mora postojati na Windowsu
+
+| Šta | Kako |
+|---|---|
+| **WSL2 s Ubuntu 22.04 ili 24.04** | PowerShell: `wsl --install -d Ubuntu` |
+| **Docker Desktop** s uključenom WSL integracijom | Docker Desktop -> Settings -> Resources -> WSL integration -> uključiti Ubuntu |
+
+Linux korisnici nemaju ovaj korak: dovoljno je Ubuntu/Debian s `apt`.
+
 **Preduslov:** WSL2 Ubuntu 24.04 s uključenom virtualizacijom (BIOS) i nested virtualizacijom. Detaljno u [`docs/00-okruzenje.md`](docs/00-okruzenje.md).
 Unutar [`docs/00-okruzenje.md`](docs/00-okruzenje.md) možete pronaći sljedeće korake koje potrebno izvršiti prije kloniranja repozitorija: 
 
