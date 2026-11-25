@@ -1,0 +1,39 @@
+---
+# Rola app_backend — .NET 8 Web API kontejner.
+
+- name: Direktorij /opt/ruo
+  ansible.builtin.file:
+    path: /opt/ruo
+    state: directory
+    owner: student
+    group: student
+    mode: "0755"
+
+- name: Kopiraj backend build kontekst
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../app/backend/"
+    dest: /opt/ruo/backend/
+    owner: student
+    group: student
+    mode: preserve
+
+- name: compose.yaml za backend
+  ansible.builtin.template:
+    src: compose.yaml.j2
+    dest: /opt/ruo/compose.yaml
+    owner: root
+    group: root
+    mode: "0640"
+  no_log: true
+
+- name: Build i pokreni backend
+  community.docker.docker_compose_v2:
+    project_src: /opt/ruo
+    state: present
+    build: policy
+
+- name: Sačekaj da backend sluša na :5000 (migracije su gotove)
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 5000
+    timeout: 180

@@ -1,0 +1,28 @@
+---
+# Rola app_seed — demo podaci u bazu nakon EF migracije.
+
+- name: Kopiraj seed.sql na db VM
+  ansible.builtin.copy:
+    src: seed.sql
+    dest: /opt/ruo/seed.sql
+    owner: student
+    group: student
+    mode: "0644"
+
+- name: Sačekaj da backend kreira šemu (tabela Users postoji)
+  ansible.builtin.command: >-
+    docker exec ruo-postgres psql -U {{ db_user }} -d {{ db_name }}
+    -tAc "SELECT to_regclass('public.\"Users\"')"
+  register: tbl_check
+  until: tbl_check.stdout | trim | length > 0
+  retries: 40
+  delay: 3
+  changed_when: false
+
+- name: Primijeni seed
+  ansible.builtin.shell:
+    cmd: >-
+      docker exec -i ruo-postgres psql -v ON_ERROR_STOP=1
+      -U {{ db_user }} -d {{ db_name }} < /opt/ruo/seed.sql
+  register: seed_out
+  changed_when: seed_out.stdout is search('INSERT 0 [1-9]')

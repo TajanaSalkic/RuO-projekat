@@ -1,0 +1,13 @@
+# Frontend (Angular build posluzen Nginxom) na ruo-web — jedini ulaz izvana.
+# Nginx reverse-proxyja /api na app.ruo.lab:5000; dns: 10.40.0.53 za razrješavanje imena.
+services:
+  web:
+    build:
+      context: ./frontend
+    image: ruo-frontend:latest
+    container_name: ruo-frontend
+    restart: unless-stopped
+    dns:
+      - "{{ ruo_dns_ip }}"
+    ports:
+      - "80:80"

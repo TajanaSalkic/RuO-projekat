@@ -1,0 +1,32 @@
+---
+# Rola app_db — PostgreSQL kontejner s perzistentnim volumenom.
+
+- name: Direktorij /opt/ruo
+  ansible.builtin.file:
+    path: /opt/ruo
+    state: directory
+    owner: student
+    group: student
+    mode: "0755"
+
+- name: compose.yaml za bazu
+  ansible.builtin.template:
+    src: compose.yaml.j2
+    dest: /opt/ruo/compose.yaml
+    owner: root
+    group: root
+    mode: "0640"
+  no_log: true
+
+- name: Pokreni PostgreSQL
+  community.docker.docker_compose_v2:
+    project_src: /opt/ruo
+    state: present
+
+- name: Sačekaj da PostgreSQL prima konekcije
+  ansible.builtin.command: "docker exec ruo-postgres pg_isready -U {{ db_user }} -d {{ db_name }}"
+  register: pg_ready
+  until: pg_ready.rc == 0
+  retries: 30
+  delay: 3
+  changed_when: false

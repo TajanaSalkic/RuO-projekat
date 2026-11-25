@@ -1,0 +1,38 @@
+---
+# Rola app_web — Angular build posluzen Nginxom + reverse proxy /api.
+
+- name: Direktorij /opt/ruo
+  ansible.builtin.file:
+    path: /opt/ruo
+    state: directory
+    owner: student
+    group: student
+    mode: "0755"
+
+- name: Kopiraj frontend build kontekst
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../app/frontend/"
+    dest: /opt/ruo/frontend/
+    owner: student
+    group: student
+    mode: preserve
+
+- name: compose.yaml za web
+  ansible.builtin.template:
+    src: compose.yaml.j2
+    dest: /opt/ruo/compose.yaml
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Build i pokreni web (Nginx + Angular)
+  community.docker.docker_compose_v2:
+    project_src: /opt/ruo
+    state: present
+    build: policy
+
+- name: Sačekaj da web sluša na :80
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 80
+    timeout: 120

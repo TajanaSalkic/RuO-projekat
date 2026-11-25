@@ -1,0 +1,21 @@
+# Backend (.NET 8 Web API) na ruo-app. Čisti HTTP :5000 (TLS na web sloju).
+# Baza se adresira DNS imenom db.ruo.lab (AO-7); dns: 10.40.0.53 da kontejner razrješava imena.
+services:
+  backend:
+    build:
+      context: ./backend
+    image: ruo-backend:latest
+    container_name: ruo-backend
+    restart: unless-stopped
+    environment:
+      DB_HOST: "db.{{ dns_zone }}"
+      DB_NAME: "{{ db_name }}"
+      DB_USER: "{{ db_user }}"
+      DB_PASSWORD: "{{ vault_db_password }}"
+      JWT_SECRET: "{{ vault_jwt_secret }}"
+      ASPNETCORE_URLS: "http://0.0.0.0:5000"
+      ASPNETCORE_ENVIRONMENT: "Production"
+    dns:
+      - "{{ ruo_dns_ip }}"
+    ports:
+      - "5000:5000"
