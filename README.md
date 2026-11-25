@@ -136,6 +136,8 @@ git clone https://github.com/TajanaSalkic/RuO-projekat.git
 cd RuO-projekat
 
 # 1. Alati (jednom) — u WSL2 Ubuntu
+
+chmod +x scripts/*.sh
 ./scripts/00-setup.sh
 ./scripts/check-env.sh        # verdikt
 
