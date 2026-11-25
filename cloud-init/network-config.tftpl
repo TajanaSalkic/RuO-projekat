@@ -1,0 +1,15 @@
+# cloud-init network-config v2: statička adresa po segmentu, bez DHCP-a.
+# 'match: en*' hvata jedini NIC bez obzira na tačno ime (enp1s0/ens3...).
+version: 2
+ethernets:
+  nic0:
+    match:
+      name: "en*"
+    dhcp4: false
+    addresses:
+      - ${ip}/${prefix}
+    routes:
+      - to: 0.0.0.0/0
+        via: ${gateway}
+    nameservers:
+      addresses: [${nameservers}]

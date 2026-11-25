@@ -1,0 +1,11 @@
+# Primjer za %USERPROFILE%\.wslconfig  (tj. C:\Users\<vase-ime>\.wslconfig)
+# Kopirajte sadržaj u taj fajl na WINDOWS strani, pa u PowerShellu: wsl --shutdown
+#
+# nestedVirtualization=true je OBAVEZNO za libvirt/KVM unutar WSL2.
+
+[wsl2]
+nestedVirtualization=true
+memory=6GB
+processors=4
+# swap=2GB
+# localhostForwarding=true
