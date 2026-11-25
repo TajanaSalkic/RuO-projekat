@@ -163,7 +163,7 @@ Demo nalozi: `admin@ruo.lab` / `Admin123!`, `mentor1@ruo.lab` / `Mentor123!`, `s
 ### Terraform idempotentan (`terraform plan` nakon `apply`)
 
 ```
-Apply complete! Resources: 18 added, 0 changed, 0 destroyed.
+Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
 
 PLAY RECAP *******************************************************************************************
 localhost                  : ok=10   changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
